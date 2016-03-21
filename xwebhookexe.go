@@ -3,7 +3,6 @@ package main
 import (
     "fmt"
     "flag"
-    "strconv"
     "strings"
     "net/http"
     "log"
@@ -34,18 +33,25 @@ func Log(handler http.Handler) http.Handler {
 }
 
 func main() {
-    var b = flag.String("b", "", "Bind address.")
-    var p = flag.Int("p", 8080, "Listen port.")
-    var u = flag.String("u", "/", "Handle URL.")
-    var e = flag.String("e", "true", "Execute command by $SHELL.")
+    var (
+      bind string
+      portNum int
+      url string
+      exe string
+    )
+
+    flag.StringVar(&bind, "b", "", "Bind address.")
+    flag.IntVar(&portNum, "p", 8080, "Listen port.")
+    flag.StringVar(&url, "u", "/", "Handle URL.")
+    flag.StringVar(&exe, "e", "true", "Execute command by $SHELL.")
     flag.Parse()
 
-    var ps = strconv.Itoa(*p)
-    log.Printf("Starting web server at %s:%s execute `%s` when handle path '%s'.", *b, ps, *e, *u)
+    var portStr = fmt.Sprint(portNum)
+    log.Printf("Starting web server at %s:%s execute `%s` when handle path '%s'.", bind, portStr, exe, url)
 
-    http.HandleFunc(*u, CreateExeHandler(*e))
-    err := http.ListenAndServe(*b + ":" + ps, Log(http.DefaultServeMux))
-    if err != nil {
-      log.Panic(err)
+    http.HandleFunc(url, CreateExeHandler(exe))
+    e := http.ListenAndServe(bind + ":" + portStr, Log(http.DefaultServeMux))
+    if e != nil {
+      log.Panic(e)
     }
 }
