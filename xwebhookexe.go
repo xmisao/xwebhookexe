@@ -41,18 +41,27 @@ func Log(handler http.Handler) http.Handler {
 }
 
 func main() {
+    var VERSION = "xwebhookexe v1.1.0"
+
     var (
       bind string
       portNum int
       url string
       exe string
+      version bool
     )
 
     flag.StringVar(&bind, "b", "", "Bind address.")
     flag.IntVar(&portNum, "p", 8080, "Listen port.")
     flag.StringVar(&url, "u", "/", "Handle URL.")
     flag.StringVar(&exe, "e", "true", "Execute command by $SHELL.")
+    flag.BoolVar(&version, "v", false, fmt.Sprintf("Print version '%s'", VERSION))
     flag.Parse()
+
+    if version {
+      fmt.Println(VERSION)
+      os.Exit(0)
+    }
 
     var portStr = fmt.Sprint(portNum)
     log.Printf("Starting web server at %s:%s execute `%s` when handle path '%s'.", bind, portStr, exe, url)
