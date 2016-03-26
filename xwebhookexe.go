@@ -10,9 +10,17 @@ import (
     "os/exec"
 )
 
+func getShell() string {
+  var shell string = os.Getenv("SHELL")
+  if shell == "" {
+    shell = "/bin/sh"
+  }
+  return shell
+}
+
 func CreateExeHandler(exe string) func(http.ResponseWriter, *http.Request) {
     return (func(w http.ResponseWriter, r *http.Request){
-      var err = exec.Command(os.Getenv("SHELL"), "-c", exe).Run()
+      var err = exec.Command(getShell(), "-c", exe).Run()
       if err == nil {
         w.WriteHeader(http.StatusOK)
         fmt.Fprintf(w, "Execute `%s` succeed.", exe)
